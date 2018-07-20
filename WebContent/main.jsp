@@ -7,7 +7,7 @@
 	<meta name = "viewport" content = "witdh=device-width, initial-scale = 1">
 	<link rel = "stylesheet" href = "css/bootstrap.css">
 	<link rel = "stylesheet" href = "css/custom.css">
-	<title>ajax jsp 실시간 채팅</title>
+	<title>AJAX JSP 실시간 채팅 TEST</title>
 	<script src = "https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src = "js/bootstrap.js"></script>
 </head>
