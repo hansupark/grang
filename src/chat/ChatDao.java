@@ -14,8 +14,8 @@ public class ChatDao {
 		try 
 		{
 			String dbURL = "jdbc:mysql://localhost:3306/annoymous";
-			String dbID = "cs1234";
-			String dbPassword = "1234";
+			String dbID = "root";
+			String dbPassword = "cs1234";
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(dbURL,dbID,dbPassword);
 		}
@@ -27,7 +27,7 @@ public class ChatDao {
 	
 	public ArrayList<Chat> getChatList(String nowTime)
 	{
-		ArrayList<Chat> chatList = null;
+		ArrayList<Chat> chatList = new ArrayList<Chat>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String SQL = "SELECT * FROM CHAT WHERE chatTime > ? ORDER BY chatTime";
