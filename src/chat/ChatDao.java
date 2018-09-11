@@ -31,6 +31,7 @@ public class ChatDao {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String SQL = "SELECT * FROM CHAT WHERE chatTime > ? ORDER BY chatTime";
+		System.out.println("now time : " + nowTime);
 		try
 		{
 			pstmt = conn.prepareStatement(SQL);
@@ -40,7 +41,112 @@ public class ChatDao {
 			{
 				Chat chat = new Chat();
 				chat.setChatName(rs.getString("chatName"));
-				chat.setChatContent(rs.getString("chatContent"));
+				chat.setChatID(rs.getInt("chatID"));
+				chat.setChatContent((rs.getString("chatContent")).trim());
+				/*int chatTime = Integer.parseInt(rs.getString("chatTime").substring(11,13));
+				String timeType = "오전";
+				if(Integer.parseInt(rs.getString("chatTime").substring(11,13))>=12)
+				{
+					timeType = "오후";
+					chatTime -= 12;
+				}*/
+				chat.setChatTime(rs.getString("chatTime"));
+				chatList.add(chat);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if(rs!=null) rs.close();
+				if(pstmt !=null) pstmt.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return chatList;
+	}
+	
+	public ArrayList<Chat> getChatListByRecent(int num)
+	{
+		ArrayList<Chat> chatList = new ArrayList<Chat>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		System.out.println("num : " + num);
+		String SQL = "SELECT * FROM CHAT WHERE chatID > (SELECT MAX(chatID) - ? FROM CHAT) ORDER BY chatTime";
+		try
+		{
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1,num);
+			rs=pstmt.executeQuery();
+			while(rs.next())
+			{
+				Chat chat = new Chat();
+				chat.setChatName(rs.getString("chatName"));
+				chat.setChatID(rs.getInt("chatID"));
+				System.out.println("dao in content : " + (rs.getString("chatContent")).trim());
+				chat.setChatContent((rs.getString("chatContent")).trim());
+				/*int chatTime = Integer.parseInt(rs.getString("chatTime").substring(11,13));
+				String timeType = "오전";
+				if(Integer.parseInt(rs.getString("chatTime").substring(11,13))>=12)
+				{
+					timeType = "오후";
+					chatTime -= 12;
+				}*/
+				chat.setChatTime(rs.getString("chatTime"));
+				System.out.println("in dao // chatName : " + chat.getChatName());
+				chatList.add(chat);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if(rs!=null) rs.close();
+				if(pstmt !=null) pstmt.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return chatList;
+	}
+	
+	public ArrayList<Chat> getChatListByRecent(String chatID)
+	{
+		ArrayList<Chat> chatList = new ArrayList<Chat>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String SQL = "SELECT * FROM CHAT WHERE chatID > ? ORDER BY chatTime";
+		try
+		{
+			pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1,Integer.parseInt(chatID));
+			rs=pstmt.executeQuery();
+			while(rs.next())
+			{
+				Chat chat = new Chat();
+				chat.setChatName(rs.getString("chatName"));
+				chat.setChatID(rs.getInt("chatID"));
+				chat.setChatContent((rs.getString("chatContent")).trim());
+				/*int chatTime = Integer.parseInt(rs.getString("chatTime").substring(11,13));
+				String timeType = "오전";
+				if(Integer.parseInt(rs.getString("chatTime").substring(11,13))>=12)
+				{
+					timeType = "오후";
+					chatTime -= 12;
+				}*/
 				chat.setChatTime(rs.getString("chatTime"));
 				chatList.add(chat);
 			}
@@ -69,7 +175,7 @@ public class ChatDao {
 		ArrayList<Chat> chatList = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		String SQL = "INSERT INTO CHAT VALUES(?, ?, now())";
+		String SQL = "INSERT INTO CHAT VALUES(?, ?, now(),NULL)";
 		try
 		{
 			pstmt = conn.prepareStatement(SQL);

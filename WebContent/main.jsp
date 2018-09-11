@@ -4,13 +4,15 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name = "viewport" content = "witdh=device-width, initial-scale = 1">
+	<meta name = "viewport" content = "width=device-width, initial-scale = 1">
 	<link rel = "stylesheet" href = "css/bootstrap.css">
 	<link rel = "stylesheet" href = "css/custom.css">
 	<title>AJAX JSP 실시간 채팅 TEST</title>
 	<script src = "https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src = "js/bootstrap.js"></script>
 	<script type = "text/javascript">
+		var lastID = 0;
+		var num = 0;
 		function submitFunction()
 		{
 			var chatName = $("#chatName").val(); // id가 chatName인 값을 가져옴
@@ -36,8 +38,7 @@
 						{
 							autoClosingAlert("#warningMessage",2000);
 						}
-				}
-				
+				}				
 			});
 			$('#chatContent').val('');
 		}
@@ -49,26 +50,41 @@
 		}
 		function chatListFunction(type)
 		{
+			num++;
 			$.ajax
 			({
 				type : "POST",
 				url : "./chatListServlet",
 				data : {
-					listType : type,					
+					listType : type,
 				},
 				success : function(data){
-					var parsed = JSON.parse(data);
+					var parsed = JSON.parse(data);	
 					var result = parsed.result;
 					for(var i = 0 ; i < result.length ; i++)
+					{
+					addChat(result[i][0].value, result[i][1].value, result[i][2].value);
+					lastID = Number(result[i][3].last)
+					}
+					/* for(var i = 0 ; i < result.length ; i++)
 						{
 						addChat(result[i][0].value, result[i][1].value, result[i][2].value);
 						}
-				}				
+						lastID = Number(parsed.last); */
+				},
+				complete : function()
+				{
+					//alert("complete");
+				},
+				error : function(error)
+				{
+					//alert("error!");
+				}
 			});
 		}
 		function addChat(chatName,chatContent,chatTime)
 		{
-			$('#chatList').append(
+			$("#chatList").append(
 				'<div class = "row">' + 
 				'<div class = "col-lg-12">' + 
 				'<div class = "media">' + 
@@ -79,18 +95,26 @@
 				chatName + 
 				'<span class = "small pull-right">' + 
 				chatTime + 
-				'</span>' + 
+				'</span>' + 	
 				'</h4>' + 
-				'</div>' +
 				'<p>' +
 				chatContent + 
-				'</p>' + 
+				'</p>' +
+				'</div>' + 
 				'</div>' + 
 				'</div>' +
 				'</div>' +
 				'<hr>'				
 			);
+		//$('#chatList').scrollTop($('chatList')[0].scrollHeight); //채팅이 추가될때마다 스크롤을 아래로 끌어줌.
 		}
+		function getInfiniteChat()
+		{
+			setInterval(function(){
+				//alert(lastID);
+				chatListFunction(lastID);
+			},1000); //1초
+		} 
 		/* <div class = "row">
 		<div class = "col-lg-12">
 			<div class = "media">
@@ -121,27 +145,26 @@
 								<div class = "clearfix"></div>
 						</div>
 						<div id = "chat" class = "panel-collapse collapse in">
-								<div id ="chatList" class = "portlet-body chat-widget" style="overflow-y: auto; width : auto; height : 300px;">												
-								
-								</div>
-								<div class = "portlet-footer">
+								<div id ="chatList" class = "portlet-body chat-widget" style="overflow-y: auto; width : auto; height : 300px;">																				
+								</div>								
+							<div class = "portlet-footer">
 										<div class = "row">
 											<div class = "form-group col-xs-4">
 												<input style ="height: 40px;" type = "text" id = "chatName" class = "form-control" placeholder = "이름" maxlength = "20">
 											</div>
 										</div>
-										<div class = "row" style="height : 90px">
+										<div class = "row" style="height: 90px;">
 											<div class = "form-group col-xs-10">
-												<textarea style = "height: 80px;" id = "chatContent" class = "form-control" placeholder = "메세지를 입력하세요" maxlength = "100">
+												<textarea style="height: 80px;" id = "chatContent" class = "form-control" placeholder = "메세지를 입력하세요" maxlength = "100">
 												</textarea>
 											</div>
 											<div class = "form-group col-xs-2">
 												<button type = "button" class = "btn btn-default pull right" onclick = "submitFunction();">전송</button>
 												<div class="clearfix"></div>
 											</div>
-								</div>
+										</div>
 							</div>
-					</div>
+						</div>
 				</div>
 			</div>
 		</div>
@@ -155,6 +178,12 @@
 			<strong>데이터베이스 오류 </strong>
 		</div>			
 	</div>
-	<button type = "button" class = "btn btn-default pull left" onclick="chatListFunction('today');">추가</button>
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			chatListFunction('ten');
+			getInfiniteChat();
+		});
+	</script>
 </body>
 </html>

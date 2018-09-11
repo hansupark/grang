@@ -2,6 +2,13 @@ package chat;
 
 public class Chat {
 
+	int ChatID;
+	public int getChatID() {
+		return ChatID;
+	}
+	public void setChatID(int chatID) {
+		ChatID = chatID;
+	}
 	String chatName;
 	String chatContent;
 	String chatTime;
